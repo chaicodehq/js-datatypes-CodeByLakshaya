@@ -41,5 +41,85 @@
  *   // => { name: "Priya", totalMarks: 63, percentage: 31.5, grade: "F", ... }
  */
 export function generateReportCard(student) {
-  // Your code here
+  
+  if (typeof student !== "object" || student === null) {
+    return null;
+  }
+
+  if (typeof student.name !== "string" || student.name.trim() === "") {
+    return null;
+  }
+
+  if (typeof student.marks !== "object" || student.marks === null) {
+    return null;
+  }
+
+  let subjects = Object.keys(student.marks);
+
+  if (subjects.length === 0) {
+    return null;
+  }
+
+  
+  let marksArray = Object.values(student.marks);
+
+  for (let i = 0; i < marksArray.length; i++) {
+    let mark = marksArray[i];
+    if (typeof mark !== "number" || mark < 0 || mark > 100) {
+      return null;
+    }
+  }
+
+ 
+  let totalMarks = marksArray.reduce((sum, mark) => sum + mark, 0);
+
+
+  let subjectCount = subjects.length;
+
+  
+  let percentage = (totalMarks / (subjectCount * 100)) * 100;
+  percentage = parseFloat(percentage.toFixed(2));
+
+  
+  let grade;
+  if (percentage >= 90) grade = "A+";
+  else if (percentage >= 80) grade = "A";
+  else if (percentage >= 70) grade = "B";
+  else if (percentage >= 60) grade = "C";
+  else if (percentage >= 40) grade = "D";
+  else grade = "F";
+
+
+  let entries = Object.entries(student.marks);
+
+  let highestSubject = entries.reduce((max, current) =>
+    current[1] > max[1] ? current : max,
+  )[0];
+
+  let lowestSubject = entries.reduce((min, current) =>
+    current[1] < min[1] ? current : min,
+  )[0];
+
+ 
+  let passedSubjects = entries
+    .filter(([subject, mark]) => mark >= 40)
+    .map(([subject]) => subject);
+
+ 
+  let failedSubjects = entries
+    .filter(([subject, mark]) => mark < 40)
+    .map(([subject]) => subject);
+
+ 
+  return {
+    name: student.name,
+    totalMarks: totalMarks,
+    percentage: percentage,
+    grade: grade,
+    highestSubject: highestSubject,
+    lowestSubject: lowestSubject,
+    passedSubjects: passedSubjects,
+    failedSubjects: failedSubjects,
+    subjectCount: subjectCount,
+  };
 }
